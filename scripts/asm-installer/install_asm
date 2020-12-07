@@ -830,7 +830,7 @@ EOF
 }
 
 set_kpt_package_url() {
-  KPT_URL="https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages"
+  KPT_URL="https://github.com/jasonwzm/anthos-service-mesh-packages"
   KPT_URL="${KPT_URL}.git/asm@${KPT_BRANCH}"
   readonly KPT_URL;
 }

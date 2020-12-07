@@ -17,7 +17,6 @@ kind: IstioOperator
 metadata:
   name: expansiongateway
 spec:
-  profile: empty
   components:
     ingressGateways:
       - name: istio-expansiongateway

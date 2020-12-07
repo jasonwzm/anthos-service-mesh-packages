@@ -15,9 +15,9 @@ fi
 
 ### Internal variables ###
 MAJOR="${MAJOR:=1}"
-MINOR="${MINOR:=7}"
-POINT="${POINT:=3}"
-REV="${REV:=6}"
+MINOR="${MINOR:=8}"
+POINT="${POINT:=1}"
+REV="${REV:=0}"
 RELEASE="${MAJOR}.${MINOR}.${POINT}-asm.${REV}"
 RELEASE_LINE="${MAJOR}.${MINOR}."
 PREVIOUS_RELEASE_LINE="${MAJOR}.$(( MINOR - 1 ))."
@@ -88,6 +88,9 @@ PRINT_HELP=0
 USE_HUB_WIP=0
 ENVIRON_PROJECT_ID=""
 HUB_MEMBERSHIP_ID=""
+
+# Environment variables used by VM
+EXPOSE_ISTIOD=0
 
 main() {
   init
@@ -554,6 +557,9 @@ parse_args() {
         OPTIONAL_OVERLAY="${2},${OPTIONAL_OVERLAY}"
         if [[ "${2}" == "hub-meshca" ]]; then
           USE_HUB_WIP=1
+        fi
+        if [[ "${2}" == "vm" ]]; then
+          EXPOSE_ISTIOD=1
         fi
         shift 2
         ;;
@@ -1659,6 +1665,12 @@ EOF
     info "Waiting for deployment..."
     retry 3 run kubectl wait --for=condition=available --timeout=600s \
         deployment/canonical-service-controller-manager -n asm-system
+    info "...done!"
+  fi
+
+  if [[ "${EXPOSE_ISTIOD}" -eq 1 ]]; then
+    info "Exposing ASM control plane for VM discovery..."
+    retry 3 run kubectl apply -f asm/vm/expose-istiod.yaml
     info "...done!"
   fi
 

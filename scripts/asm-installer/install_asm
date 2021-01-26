@@ -1017,7 +1017,7 @@ EOF
 }
 
 set_kpt_package_url() {
-  KPT_URL="https://github.com/GoogleCloudPlatform/anthos-service-mesh-packages"
+  KPT_URL="https://github.com/jasonwzm/anthos-service-mesh-packages"
   KPT_URL="${KPT_URL}.git/asm@${KPT_BRANCH}"
   readonly KPT_URL;
 }
@@ -1524,10 +1524,10 @@ logging.googleapis.com
 cloudtrace.googleapis.com
 meshca.googleapis.com
 meshtelemetry.googleapis.com
-meshconfig.googleapis.com
+staging-meshconfig.sandbox.googleapis.com
 iamcredentials.googleapis.com
 gkeconnect.googleapis.com
-gkehub.googleapis.com
+staging-gkehub.sandbox.googleapis.com
 cloudresourcemanager.googleapis.com
 stackdriver.googleapis.com
 privateca.googleapis.com
@@ -1587,13 +1587,13 @@ EOF
     local POST_DATA; POST_DATA='{"workloadIdentityPools":["'${ENVIRON_PROJECT_ID}'.hub.id.goog","'${ENVIRON_PROJECT_ID}'.svc.id.goog"]}'
     run curl --request POST --fail \
     --data "${POST_DATA}" -o /dev/null \
-    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
+    "https://staging-meshconfig.sandbox.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
     --header "Content-Type: application/json" \
     -K <(auth_header "$(get_auth_token)")
   else
     run curl --request POST --fail \
     --data '' -o /dev/null \
-    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
+    "https://staging-meshconfig.sandbox.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
     -K <(auth_header "$(get_auth_token)")
   fi
 }
@@ -1602,7 +1602,7 @@ init_meshconfig_managed() {
   info "Initializing meshconfig managed API..."
   run curl --request POST --fail \
     --data '{"prepare_istiod": true}' \
-    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
+    "https://staging-meshconfig.sandbox.googleapis.com/v1alpha1/projects/${PROJECT_ID}:initialize" \
     --header "X-Server-Timeout: 600" \
     --header "Content-Type: application/json" \
     -K <(auth_header "$(get_auth_token)")
@@ -1744,7 +1744,7 @@ get_hub_workload_identity() {
   local IDENTITY_PROVIDER
   local IDENTITY
   IDENTITY_PROVIDER="$(kubectl get memberships.hub.gke.io membership -o=json | jq .spec.identity_provider)"
-  IDENTITY="$(echo "${IDENTITY_PROVIDER}" | sed 's/^\"https:\/\/gkehub.googleapis.com\/projects\/\(.*\)\/locations\/global\/memberships\/\(.*\)\"$/\1 \2/g')"
+  IDENTITY="$(echo "${IDENTITY_PROVIDER}" | sed 's/^\"https:\/\/staging-gkehub.sandbox.googleapis.com\/projects\/\(.*\)\/locations\/global\/memberships\/\(.*\)\"$/\1 \2/g')"
   echo "${IDENTITY}"
 }
 
@@ -1986,7 +1986,7 @@ EOF
 )
   fi
   retry 2 run curl --request POST \
-    "https://meshconfig.googleapis.com/v1alpha1/projects/${PROJECT_ID}/locations/${CLUSTER_LOCATION}/clusters/${CLUSTER_NAME}:runIstiod" \
+    "https://staging-meshconfig.sandbox.googleapis.com/v1alpha1/projects/${PROJECT_ID}/locations/${CLUSTER_LOCATION}/clusters/${CLUSTER_NAME}:runIstiod" \
     --data "${CR_IMAGE_JSON}" \
     --header "X-Server-Timeout: 600" \
     --header "Content-Type: application/json" \

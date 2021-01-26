@@ -263,7 +263,7 @@ openAPI:
       x-k8s-cli:
         substitution:
           name: hub-idp-url
-          pattern: "https://gkehub.googleapis.com/projects/ENVIRON_PROJECT_ID/locations/global/memberships/MEMBERSHIP_ID"
+          pattern: "https://staging-gkehub.sandbox.googleapis.com/projects/ENVIRON_PROJECT_ID/locations/global/memberships/MEMBERSHIP_ID"
           values:
           - marker: ENVIRON_PROJECT_ID
             ref: '#/definitions/io.k8s.cli.setters.gcloud.project.environProjectID'
